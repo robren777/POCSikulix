@@ -15,14 +15,12 @@ using OpenQA.Selenium.Support.UI;
 using iText.Layout;
 using iText.Kernel.Pdf;
 using iText.Layout.Element;
-using Winium.Elements.Desktop.Extensions;
-
 
 
 namespace SeleniumAndSikuli
 {
     [TestClass]
-    public class RecargasTAE
+    public class ServicioEnLineaSKY
     {
         //private IWebDriver webDriver = null;
         private APILauncher launcher = new APILauncher(true);
@@ -32,7 +30,7 @@ namespace SeleniumAndSikuli
         SqlConnection SqlConn = new SqlConnection();
 
         [TestMethod]
-        public void MTCFT079RecargaTAE()
+        public void MTCFT079ServicioSKY()
         {
             launcher.Start();
 
@@ -42,7 +40,7 @@ namespace SeleniumAndSikuli
             WiniumDriver winDriver = new WiniumDriver(winDriverPath, option);
 
             //Insumos de Prueba
-            string numCel = "8100000001";
+            string FolioServicio = "123456789102";
             string userCajero = "RUGAMA8502065";
             string passCajero = "Comercio.1";
 
@@ -56,21 +54,23 @@ namespace SeleniumAndSikuli
             WiniumBy usertxt = WiniumBy.ClassName("TextBlock");
             WiniumBy XPOS = WiniumBy.Name("Xpos");
             WiniumBy txtBoxJournal = WiniumBy.XPath("//*[@AutomationId='txtCode' and @ClassName='TextBox' and @IsEnabled=true()]");
-            WiniumBy journalList = WiniumBy.AutomationId("lvTransactionJournalLine");
-            WiniumBy journalItem = WiniumBy.Name("Oxxo.Xpos.Modules.Sale.Presentation.Model.TxnJournalLine");
 
             //Objetos de Xpos (Pattern Images for SikuliX)
-            Pattern btnMenuTae = new Pattern(folderPath + "btnMenuTae.png", 0.9);
-            Pattern btnTelcel = new Pattern(folderPath + "btnTelcel.png", 0.9);
-            Pattern btnSubMenuTelcel = new Pattern(folderPath + "btnSubMenuTelcel.png", 0.9);
-            Pattern itemJournalTae = new Pattern(folderPath + "itemJournalTae.png");
+            Pattern btnServicios = new Pattern(folderPath + "btnServicios.png", 0.9);
+            Pattern txtBuscarServicios = new Pattern(folderPath + "txtBuscarServicios.png", 0.9);
+            Pattern btnSkyEnLinea = new Pattern(folderPath + "btnSkyEnLinea.png", 0.9);
+            Pattern btnSI = new Pattern(folderPath + "btnSI.png", 0.9);
+            Pattern txtFolio1 = new Pattern(folderPath + "txtFolio1.png", 0.9);
+            Pattern txtFolio2 = new Pattern(folderPath + "txtFolio2.png", 0.9);
+            Pattern btnConsulta = new Pattern(folderPath + "btnConsulta.png", 0.9);
+            Pattern btnProcesar = new Pattern(folderPath + "btnProcesar.png", 0.9);
+            Pattern btnSiAviso = new Pattern(folderPath + "btnSiAviso.png", 0.9);
+            Pattern btnNo = new Pattern(folderPath + "btnNo.png", 0.9);
             Pattern txtJournal = new Pattern(folderPath + "txtJournal.png");
             Pattern btnSubtotalizar = new Pattern(folderPath + "btnSubtotalizar.png");
             Pattern btnRegresarPromo = new Pattern(folderPath + "btnRegresarPromo.png");
             Pattern msjNoDeseoAcumularPuntos = new Pattern(folderPath + "msjNoDeseoAcumularPuntos.png");
             Pattern btnPagarEfectivo = new Pattern(folderPath + "btnPagarEfectivo.png");
-            Pattern txtNumCelularTae = new Pattern(folderPath + "txtNumCelularTae.png");
-            Pattern txtNumCelularConfirmarTae = new Pattern(folderPath + "txtNumCelularConfirmarTae.png");
             Pattern btnAceptarYContinuarTae = new Pattern(folderPath + "btnAceptarYContinuarTae.png");
             Pattern screenJournal = new Pattern(folderPath + "screenJournal.png");
             Pattern cajerosTitulo = new Pattern(folderPath + "cajerosTitulo.png", 0.5);
@@ -81,7 +81,7 @@ namespace SeleniumAndSikuli
 
             //Desactiva la tecla bloq mayus
             AutoItX.Send("{CAPSLOCK 0}");
-
+           
             //Activa la ventana de Printer Simulator
             AutoItX.WinActivate("Microsoft PosPrinter Simulator");
 
@@ -170,72 +170,58 @@ namespace SeleniumAndSikuli
 
             //TEST SCRIPT//
 
-            //Se valida exista el botón Recarga tiempo aire
-            if (screen.Exists(btnMenuTae, 30))
+            //Se valida exista el botón Servicios
+            if (screen.Exists(btnServicios, 30))
             {
-                screen.Click(btnMenuTae, KeyModifier.NONE, true);
-                screen.Wait(btnTelcel, 30);
-                screen.Click(btnTelcel, KeyModifier.NONE, true);
-                screen.Wait(btnSubMenuTelcel, 30);  
-                screen.Click(btnSubMenuTelcel, KeyModifier.NONE, true);
+                screen.Click(btnServicios, KeyModifier.NONE, true);
             }
             else
             {
-                Assert.Fail("Error, no se encontró el botón del menú TAE");
+                Assert.Fail("Error, no se encontró el botón del menú Servicios");
             }
 
-            //Valida agregue el Item al JournaL
-            try
+            //Busca el servicio SKY
+            if (screen.Exists(txtBuscarServicios, 30))
             {
-                WebDriverWait wait = new WebDriverWait(winDriver, TimeSpan.FromSeconds(30));
-                wait.Until(x => x.FindElement(journalList));
-                Console.WriteLine("ENCUENTRA JOURNAL LIST");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                Assert.Fail("ERROR, NO SE ENCONTRÓ LA LISTA DEL JOURNAL");
-            }
-
-            ReadOnlyCollection<WiniumElement> listofitems = winDriver.FindElements(journalItem);
-            if (listofitems.Count() == 1)
-            {
-                Console.WriteLine("correcto, agregó el Item al Journal: " + listofitems[0].FindElements(WiniumBy.ClassName("TextBlock")).ElementAt(0).GetAttribute("Name"));
+                screen.Type(txtBuscarServicios, "Sky En Linea" + Key.ENTER);
+                Thread.Sleep(5000);
+                screen.Click(btnSkyEnLinea, true);
+                Thread.Sleep(5000);
+                screen.Click(btnSI, true);
             }
             else
             {
-                Assert.Fail("ERROR, NO agregó el Item al Journal");
+                Assert.Fail("Error, no se encontró el CAMPO para buscar servicios");
             }
-            
-            //Extrae un SKU de BD
-            SqlConn.ConnectionString = "Data Source=localhost;Initial Catalog=XposStore;User Id=sa;Password=12345678;";
-            SqlConn.Open();
-            string skuBD = "";
-            string Sqlstr = " SELECT TOP 1 SKU FROM ITEM " +
-                            " WHERE ITEM_STATUS_CODE_ID = 33 " +
-                            " AND ITEM_TYPE_CODE_ID = 30 " +
-                            " AND NAME LIKE 'COCA-COLA%'";
-            SqlCommand command = new SqlCommand(Sqlstr, SqlConn);
-            SqlDataReader reader = command.ExecuteReader();
 
-            if (reader.HasRows)
+            //Teclea el folio del servicio
+            if (screen.Exists(txtFolio1, 60))
             {
-                while (reader.Read())
-                {
-                    skuBD = reader.GetString(0);
-                    Console.WriteLine(skuBD);
-                }
+                AutoItX.Send("{BS}");//tecla backspace
+                screen.Type(txtFolio1, FolioServicio);
+                AutoItX.Send("{ENTER}"); //tecla ENTER
+                Thread.Sleep(5000);
+                screen.Type(txtFolio2, FolioServicio + Key.ENTER);
             }
             else
             {
-                Console.WriteLine("No se encontraron resultados en la base de datos.");
+                Assert.Fail("Error, no se encontró el CAMPO para capturar folio");
             }
-            reader.Close();
-            SqlConn.Close();
 
-            //Captura el SKU en el Journal
-            screen.Type(txtJournal, skuBD);
-            AutoItX.Send("{ENTER}");
+            //Da click en botón Consulta,Procesar
+            if (screen.Exists(btnConsulta, 30))
+            {
+                screen.Click(btnConsulta, true);
+                Thread.Sleep(10000);
+                screen.Click(btnProcesar, true);
+                Thread.Sleep(8000);
+                screen.Click(btnSiAviso, true);
+            }
+            else
+            {
+                Assert.Fail("Error, no se encontró el botón Consulta, posible falla de ambiente");
+            }
+
 
             Thread.Sleep(10000);
             
@@ -247,24 +233,23 @@ namespace SeleniumAndSikuli
             screen.Wait(btnRegresarPromo, 30);
             screen.Click(btnRegresarPromo, KeyModifier.NONE, true);
 
+            //Mensaje de recarga
+            screen.Wait(btnNo, 30);
+            screen.Click(btnNo, KeyModifier.NONE, true);
+
+            //ACUMULACION DE PUNTOS
             screen.Wait(msjNoDeseoAcumularPuntos, 30);
             screen.Click(msjNoDeseoAcumularPuntos, KeyModifier.NONE, true);
+
+            //REDONDEO
+            screen.Wait(btnNo, 30);
+            screen.Click(btnNo, KeyModifier.NONE, true);
 
             //Cierra la venta en efectivo
             screen.Wait(btnPagarEfectivo, 30);
             screen.Click(btnPagarEfectivo, KeyModifier.NONE, true);
 
-            //Captura y Confirma Número de Celular, da clic en Aceptar
-            screen.Wait(txtNumCelularTae, 60);
-            screen.Type(txtNumCelularTae, numCel + Key.ENTER);
-            if (screen.Exists(txtNumCelularConfirmarTae, 7))
-            {
-                screen.Type(txtNumCelularConfirmarTae, numCel);
-            }
-            screen.Wait(btnAceptarYContinuarTae, 30);
-            Thread.Sleep(5000);
-            screen.Click(btnAceptarYContinuarTae, KeyModifier.NONE, true);
-
+           
             //Extrae el texto del PosPrinter Simulator
             string ticket = winDriver.FindElement(txtPrinter).Text;
 
@@ -276,9 +261,9 @@ namespace SeleniumAndSikuli
             Console.WriteLine("Ticket: " + ticket);
            
             //Encuentra info en el ticket
-            if (ticket.Contains("TAE TELCEL"))
+            if (ticket.Contains("SKY"))
             {
-                Console.WriteLine("correcto, aparece TAE TELCEL en el ticket");
+                Console.WriteLine("correcto, aparece SKY en el ticket");
             }
             else
             {

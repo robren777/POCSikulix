@@ -15,24 +15,22 @@ using OpenQA.Selenium.Support.UI;
 using iText.Layout;
 using iText.Kernel.Pdf;
 using iText.Layout.Element;
-using Winium.Elements.Desktop.Extensions;
-
+using System.Collections.Generic;
 
 
 namespace SeleniumAndSikuli
 {
     [TestClass]
-    public class RecargasTAE
+    public class DS50App
     {
         //private IWebDriver webDriver = null;
         private APILauncher launcher = new APILauncher(true);
         //private object session;
         DesktopOptions option = new DesktopOptions();
         Screen screen = new Screen();
-        SqlConnection SqlConn = new SqlConnection();
 
         [TestMethod]
-        public void MTCFT079RecargaTAE()
+        public void MTCFT079DS50App()
         {
             launcher.Start();
 
@@ -42,7 +40,6 @@ namespace SeleniumAndSikuli
             WiniumDriver winDriver = new WiniumDriver(winDriverPath, option);
 
             //Insumos de Prueba
-            string numCel = "8100000001";
             string userCajero = "RUGAMA8502065";
             string passCajero = "Comercio.1";
 
@@ -56,22 +53,19 @@ namespace SeleniumAndSikuli
             WiniumBy usertxt = WiniumBy.ClassName("TextBlock");
             WiniumBy XPOS = WiniumBy.Name("Xpos");
             WiniumBy txtBoxJournal = WiniumBy.XPath("//*[@AutomationId='txtCode' and @ClassName='TextBox' and @IsEnabled=true()]");
-            WiniumBy journalList = WiniumBy.AutomationId("lvTransactionJournalLine");
-            WiniumBy journalItem = WiniumBy.Name("Oxxo.Xpos.Modules.Sale.Presentation.Model.TxnJournalLine");
 
             //Objetos de Xpos (Pattern Images for SikuliX)
-            Pattern btnMenuTae = new Pattern(folderPath + "btnMenuTae.png", 0.9);
-            Pattern btnTelcel = new Pattern(folderPath + "btnTelcel.png", 0.9);
-            Pattern btnSubMenuTelcel = new Pattern(folderPath + "btnSubMenuTelcel.png", 0.9);
-            Pattern itemJournalTae = new Pattern(folderPath + "itemJournalTae.png");
+            Pattern btnIniciarDS50 = new Pattern(folderPath + "btnIniciarDS50.png");
+            Pattern btnDetenerDS50 = new Pattern(folderPath + "btnDetenerDS50.png");
+            Pattern btnRealizarComunicacionDS50 = new Pattern(folderPath + "btnRealizarComunicacionDS50.png");
+            Pattern btnLimpiarLogDS50 = new Pattern(folderPath + "btnLimpiarLogDS50.png");
+            Pattern btnConfiguracionDS50 = new Pattern(folderPath + "btnConfiguracionDS50.png");
+            Pattern btnSalirDS50 = new Pattern(folderPath + "btnSalirDS50.png");
             Pattern txtJournal = new Pattern(folderPath + "txtJournal.png");
             Pattern btnSubtotalizar = new Pattern(folderPath + "btnSubtotalizar.png");
             Pattern btnRegresarPromo = new Pattern(folderPath + "btnRegresarPromo.png");
             Pattern msjNoDeseoAcumularPuntos = new Pattern(folderPath + "msjNoDeseoAcumularPuntos.png");
             Pattern btnPagarEfectivo = new Pattern(folderPath + "btnPagarEfectivo.png");
-            Pattern txtNumCelularTae = new Pattern(folderPath + "txtNumCelularTae.png");
-            Pattern txtNumCelularConfirmarTae = new Pattern(folderPath + "txtNumCelularConfirmarTae.png");
-            Pattern btnAceptarYContinuarTae = new Pattern(folderPath + "btnAceptarYContinuarTae.png");
             Pattern screenJournal = new Pattern(folderPath + "screenJournal.png");
             Pattern cajerosTitulo = new Pattern(folderPath + "cajerosTitulo.png", 0.5);
             Pattern cajerosBotones = new Pattern(folderPath + "cajerosBotones.png", 0.9);
@@ -81,6 +75,10 @@ namespace SeleniumAndSikuli
 
             //Desactiva la tecla bloq mayus
             AutoItX.Send("{CAPSLOCK 0}");
+
+            //Obtiene el texto del portapapeles
+            var clipg = AutoItX.ClipGet();
+            Console.WriteLine(clipg);
 
             //Activa la ventana de Printer Simulator
             AutoItX.WinActivate("Microsoft PosPrinter Simulator");
@@ -170,121 +168,41 @@ namespace SeleniumAndSikuli
 
             //TEST SCRIPT//
 
-            //Se valida exista el botón Recarga tiempo aire
-            if (screen.Exists(btnMenuTae, 30))
+            //Inicia la aplicación DS50
+            Process.Start(@"C:\POS\Ds50Tools.exe");
+
+            //Valida se despliegue la ventana
+            if (screen.Exists(btnIniciarDS50, 30))
             {
-                screen.Click(btnMenuTae, KeyModifier.NONE, true);
-                screen.Wait(btnTelcel, 30);
-                screen.Click(btnTelcel, KeyModifier.NONE, true);
-                screen.Wait(btnSubMenuTelcel, 30);  
-                screen.Click(btnSubMenuTelcel, KeyModifier.NONE, true);
+                Console.WriteLine("Se despliega módulo DS50");
             }
             else
             {
-                Assert.Fail("Error, no se encontró el botón del menú TAE");
-            }
-
-            //Valida agregue el Item al JournaL
-            try
-            {
-                WebDriverWait wait = new WebDriverWait(winDriver, TimeSpan.FromSeconds(30));
-                wait.Until(x => x.FindElement(journalList));
-                Console.WriteLine("ENCUENTRA JOURNAL LIST");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                Assert.Fail("ERROR, NO SE ENCONTRÓ LA LISTA DEL JOURNAL");
-            }
-
-            ReadOnlyCollection<WiniumElement> listofitems = winDriver.FindElements(journalItem);
-            if (listofitems.Count() == 1)
-            {
-                Console.WriteLine("correcto, agregó el Item al Journal: " + listofitems[0].FindElements(WiniumBy.ClassName("TextBlock")).ElementAt(0).GetAttribute("Name"));
-            }
-            else
-            {
-                Assert.Fail("ERROR, NO agregó el Item al Journal");
+                Assert.Fail("Error, no se desplegó el módulo DS50 o tardó demasiado");
             }
             
-            //Extrae un SKU de BD
-            SqlConn.ConnectionString = "Data Source=localhost;Initial Catalog=XposStore;User Id=sa;Password=12345678;";
-            SqlConn.Open();
-            string skuBD = "";
-            string Sqlstr = " SELECT TOP 1 SKU FROM ITEM " +
-                            " WHERE ITEM_STATUS_CODE_ID = 33 " +
-                            " AND ITEM_TYPE_CODE_ID = 30 " +
-                            " AND NAME LIKE 'COCA-COLA%'";
-            SqlCommand command = new SqlCommand(Sqlstr, SqlConn);
-            SqlDataReader reader = command.ExecuteReader();
+            //valida existan todos los botones y da clic en botón Salir
+            List<Pattern> listbtn = new List<Pattern>() {btnIniciarDS50, btnDetenerDS50, 
+                btnRealizarComunicacionDS50, btnLimpiarLogDS50, 
+                btnConfiguracionDS50, btnSalirDS50};
 
-            if (reader.HasRows)
+            foreach (var item in listbtn)
             {
-                while (reader.Read())
+                if (screen.Exists(item, 30))
                 {
-                    skuBD = reader.GetString(0);
-                    Console.WriteLine(skuBD);
+                    screen.Find(item,true);
+                    Console.WriteLine("correcto, encontró: " + item.ImagePath);
+                    if (item == btnSalirDS50)
+                    {
+                        screen.Click(item);
+                    }
+                }
+                else
+                {
+                    Assert.Fail("Error, no se encontró el botón: " + item.ImagePath);
                 }
             }
-            else
-            {
-                Console.WriteLine("No se encontraron resultados en la base de datos.");
-            }
-            reader.Close();
-            SqlConn.Close();
-
-            //Captura el SKU en el Journal
-            screen.Type(txtJournal, skuBD);
-            AutoItX.Send("{ENTER}");
-
-            Thread.Sleep(10000);
             
-            //Subtotaliza Venta
-            screen.Wait(btnSubtotalizar, 30);
-            screen.Click(btnSubtotalizar, KeyModifier.NONE, true);
-
-            //Cierra Mensajes de Sugerencia de Venta
-            screen.Wait(btnRegresarPromo, 30);
-            screen.Click(btnRegresarPromo, KeyModifier.NONE, true);
-
-            screen.Wait(msjNoDeseoAcumularPuntos, 30);
-            screen.Click(msjNoDeseoAcumularPuntos, KeyModifier.NONE, true);
-
-            //Cierra la venta en efectivo
-            screen.Wait(btnPagarEfectivo, 30);
-            screen.Click(btnPagarEfectivo, KeyModifier.NONE, true);
-
-            //Captura y Confirma Número de Celular, da clic en Aceptar
-            screen.Wait(txtNumCelularTae, 60);
-            screen.Type(txtNumCelularTae, numCel + Key.ENTER);
-            if (screen.Exists(txtNumCelularConfirmarTae, 7))
-            {
-                screen.Type(txtNumCelularConfirmarTae, numCel);
-            }
-            screen.Wait(btnAceptarYContinuarTae, 30);
-            Thread.Sleep(5000);
-            screen.Click(btnAceptarYContinuarTae, KeyModifier.NONE, true);
-
-            //Extrae el texto del PosPrinter Simulator
-            string ticket = winDriver.FindElement(txtPrinter).Text;
-
-            while (ticket.Length==0)
-            {
-                ticket = winDriver.FindElement(txtPrinter).Text;
-            }
-
-            Console.WriteLine("Ticket: " + ticket);
-           
-            //Encuentra info en el ticket
-            if (ticket.Contains("TAE TELCEL"))
-            {
-                Console.WriteLine("correcto, aparece TAE TELCEL en el ticket");
-            }
-            else
-            {
-                Assert.Fail("Error, no aparece el texto en el ticket");
-            }
-           
             //TEST SCRIPT//
 
             //FIN DE EJECUCIÓN

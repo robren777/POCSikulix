@@ -218,6 +218,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestCases\ThirdAutomationXposSikuliX.cs" />
+    <Compile Include="TestCases\SecondAutomationXposSikuliX.cs" />
     <Compile Include="TestCases\FirstAutomationXposSikuliX.cs" />
     <Compile Include="TestCases\GoogleSearch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
