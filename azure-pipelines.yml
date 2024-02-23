@@ -3,8 +3,11 @@ trigger:
     include:
     - main  # Puedes cambiar esto dependiendo de tu rama principal
 
+jobs:
+- job: windows_build
+  displayName: Windows - .NET Framework
 pool:
-  #vmImage: 'windows-latest'
+  vmImage: 'windows-latest'
   name: MONRFWPRO  # Reemplaza con el nombre de tu agente
 
 variables:
