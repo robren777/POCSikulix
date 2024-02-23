@@ -13,7 +13,7 @@ variables:
 
 pool:
   vmImage: 'windows-latest'
-  name: MONRFWPRO  # Reemplaza con el nombre de tu agente
+  name: RobAgent  # Reemplaza con el nombre de tu agente
 
 steps:
   - task: NuGetToolInstaller@0
