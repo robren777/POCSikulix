@@ -233,6 +233,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="selenium-manager\windows\selenium-manager.exe" />
+    <Content Include="sikulirestapi-1.0.jar">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="WebDriver\geckodriver.exe" />
     <Content Include="Resources\1.png" />
     <Content Include="Resources\5.png" />

@@ -16,30 +16,42 @@ using iText.Layout;
 using iText.Kernel.Pdf;
 using iText.Layout.Element;
 using Winium.Elements.Desktop.Extensions;
-
-
+using System.Runtime.CompilerServices;
+using Microsoft.Identity.Client;
 
 namespace SeleniumAndSikuli
 {
     [TestClass]
     public class RecargasTAE
     {
-        //private IWebDriver webDriver = null;
-        private APILauncher launcher = new APILauncher(true);
-        //private object session;
+        APILauncher launcher = new APILauncher(true);
         DesktopOptions option = new DesktopOptions();
         Screen screen = new Screen();
         SqlConnection SqlConn = new SqlConnection();
+        WiniumDriver winDriver = null;
+        public TestContext TestContext {get; set;}
+        string TestId = null;
+        string TestTitle = null;
 
+        //Realiza acciones antes de iniciar el test method
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            TestId = TestContext.TestName;
+            TestTitle = "MTC-FT-079-RecargaTAE";
+
+            launcher.Start();
+            option.ApplicationPath = @"C:\Xpos\Xpos.exe";
+            string winDriverPath = @"C:\Sikulix";
+            winDriver = new WiniumDriver(winDriverPath, option);
+            Console.WriteLine("Test Case Id: {0} , Test Case Name: {1}", TestId, TestTitle);
+        }
+
+        //Código del script
         [TestMethod]
         public void MTCFT079RecargaTAE()
         {
-            launcher.Start();
-
-            option.ApplicationPath = @"C:\Xpos\Xpos.exe";
-            string winDriverPath = @"C:\Sikulix";
             string folderPath = @"C:\Sikulix\Images\";
-            WiniumDriver winDriver = new WiniumDriver(winDriverPath, option);
 
             //Insumos de Prueba
             string numCel = "8100000001";
@@ -111,7 +123,7 @@ namespace SeleniumAndSikuli
             //}
 
             //Console.WriteLine("Informe PDF creado con éxito en: " + filePath);
-        
+
             //Ejemplo de uso de explicit wait
             try
             { 
@@ -143,7 +155,7 @@ namespace SeleniumAndSikuli
                 Console.WriteLine("elementos: " + listofelements.Count());
                 for (int i = 0; i < listofelements.Count; i++)
                 {
-                    String nameCajero = listofelements[i].FindElement(usertxt).GetAttribute("Name").Trim();
+                    string nameCajero = listofelements[i].FindElement(usertxt).GetAttribute("Name").Trim();
                     Console.WriteLine("Cajero:" + nameCajero);
                     if (nameCajero == userCajero)
                     {
@@ -284,13 +296,15 @@ namespace SeleniumAndSikuli
             {
                 Assert.Fail("Error, no aparece el texto en el ticket");
             }
-           
-            //TEST SCRIPT//
+        }
 
-            //FIN DE EJECUCIÓN
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            //realiza acciones al finalizar el test method o al terminar por error
             winDriver.Quit();
             launcher.Stop();
+            Console.WriteLine("Finaliza el caso, Test Case Id: {0} , Test Case Name: {1}", TestId, TestTitle);
         }
     }
-
 }
