@@ -67,7 +67,7 @@ namespace SeleniumAndSikuli
             WiniumBy contentUseR = WiniumBy.Name("Oxxo.Xpos.Commons.Security.DTO.Info.OperatorInfo");
             WiniumBy usertxt = WiniumBy.ClassName("TextBlock");
             WiniumBy XPOS = WiniumBy.Name("Xpos");
-            WiniumBy txtBoxJournal = WiniumBy.XPath("//*[@AutomationId='txtCode' and @ClassName='TextBox' and @IsEnabled=true()]");
+            WiniumBy txtBoxJournal = WiniumBy.XPath("//*[@AutomationId='txtCode' and @ClassName='TextBox' and @IsEnabled='True']");
             WiniumBy journalList = WiniumBy.AutomationId("lvTransactionJournalLine");
             WiniumBy journalItem = WiniumBy.Name("Oxxo.Xpos.Modules.Sale.Presentation.Model.TxnJournalLine");
 
