@@ -1,0 +1,116 @@
+trigger:
+  branches:
+    include:
+    - main  # Puedes cambiar esto dependiendo de tu rama principal
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+#jobs:
+#- job: windows_build
+  #displayName: Windows - .NET Framework
+
+pool:
+  vmImage: 'windows-latest'
+  name: RobAgent  # Reemplaza con el nombre de tu agente
+
+steps:
+  - task: NuGetToolInstaller@0
+
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: '$(solution)'
+
+  #steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '3.1.x'  # Ajusta la versión de .NET según tus necesidades
+
+  #- script: dotnet restore
+  #  displayName: 'dotnet restore'
+
+  - script: dotnet build SeleniumAndSikuli/SeleniumAndSikuli.sln
+    displayName: 'Compilar proyecto específico'
+
+  #- script: |
+  #    dotnet restore
+  #    dotnet build
+  #  displayName: 'dotnet restore and build'
+
+  #- script: |
+  #    dotnet test --logger "trx;LogFileName=testresults.trx"  # Esto asume que tienes pruebas unitarias configuradas
+  #  displayName: 'dotnet test'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'VSTest'
+      testResultsFiles: '**/*.trx'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Ejecución de pruebas automatizadas'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/TEST-*.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Ejecución de pruebas automatizadas'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'NUnit'
+      testResultsFiles: '**/TestResult.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Ejecución de pruebas automatizadas'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'NUnit'
+      testResultsFiles: '**/TEST-*.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Ejecución de pruebas automatizadas'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'XUnit'
+      testResultsFiles: '**/TEST-*.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Ejecución de pruebas automatizadas'
+      failTaskOnFailedTests: true  # Marca el paso como fallido si hay pruebas fallidas
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/*.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Ejecución de pruebas automatizadas'
+      #testRunSystem: 'VSTest'  # Selecciona el sistema de pruebas adecuado
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/TEST-*.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Ejecución de pruebas automatizadas'
+      #testRunSystem: 'VSTest'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/TEST-*.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testRunTitle: 'Ejecución de pruebas automatizadas'
+      #testRunSystem: 'VSTest'
+      
+  - task: VSTest@2
+    displayName: "Server Unit Test"
+    inputs:
+      testSelector: 'testPlan'
+      testPlan: 11835
+      testSuite: 11841
+      testConfiguration: 16
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      codeCoverageEnabled: true
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
